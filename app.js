@@ -232,11 +232,10 @@ function playWordSequence(entry, onDone) {
 }
 
 function cancelSpeech() {
-  if (speechSynthesis.speaking || speechSynthesis.pending) {
-    speechSynthesis.cancel();
-    // Safari/macOS can get stuck in a paused state after cancel()
-    speechSynthesis.resume();
-  }
+  speechSynthesis.cancel();
+  // Always resume — Safari/macOS can be left in a stuck paused state after
+  // cancel(), even when .speaking and .pending both read as false.
+  speechSynthesis.resume();
 }
 
 // ─── Progress dots ────────────────────────────────────────────────────────────
@@ -394,16 +393,26 @@ $("btn-listen-picture").addEventListener("click", () => {
   setTimerWaiting(true);
   $("btn-listen-picture").disabled = true;
 
-  const utter  = makeUtterance(gameWords[wordIndex].word, 0.6);
+  let finished = false;
   const finish = () => {
+    if (finished) return;
+    finished = true;
     setTimerWaiting(false);
     $("btn-listen-picture").disabled = false;
     startTimer(); // resumes from current timeLeft
   };
-  utter.onend  = finish;
-  utter.onerror = finish;
+
+  // Cancel first, then speak on the next tick — doing both in the same
+  // synchronous block causes Safari to silently drop the new utterance.
   cancelSpeech();
-  speechSynthesis.speak(utter);
+  setTimeout(() => {
+    const utter = makeUtterance(gameWords[wordIndex].word, 0.6);
+    utter.onend  = finish;
+    utter.onerror = finish;
+    speechSynthesis.speak(utter);
+    // Safety net: if the browser never fires onend/onerror, restart timer anyway
+    setTimeout(finish, 6000);
+  }, 80);
 });
 
 // ─── Event: Start & Play Again ───────────────────────────────────────────────
