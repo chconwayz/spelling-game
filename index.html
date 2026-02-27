@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Spelling Stars ⭐</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════ WELCOME SCREEN -->
+  <div id="screen-welcome" class="screen">
+    <div class="welcome-inner">
+      <div class="welcome-stars" aria-hidden="true">⭐🌟⭐</div>
+      <h1 class="title">Spelling Stars</h1>
+      <p class="subtitle">Year 1 Spelling Practice</p>
+
+      <div class="instructions-box">
+        <p>📋 <strong>How to play:</strong></p>
+        <ol>
+          <li>Get a pencil and some paper ready</li>
+          <li>Look at the picture — or listen to the word</li>
+          <li>Write the word on your paper</li>
+          <li>You have <strong>20 seconds</strong> per word</li>
+          <li>Check your answers at the end!</li>
+        </ol>
+      </div>
+
+      <button id="btn-start" class="btn btn-big btn-green">
+        Let's Go! 🚀
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ GAME SCREEN -->
+  <div id="screen-game" class="screen hidden">
+
+    <!-- Top bar -->
+    <div class="game-header">
+      <div id="word-counter" class="word-counter">Word 1 of 10</div>
+      <div id="progress-dots" class="progress-dots" role="progressbar"></div>
+    </div>
+
+    <!-- Word card -->
+    <div class="card-area">
+
+      <div id="word-card" class="word-card">
+
+        <!-- Tricky word badge — spins in on top of card (hidden by default) -->
+        <div id="tricky-badge" class="tricky-badge hidden" aria-live="polite">
+          <span class="badge-star">⭐</span>
+          <span class="badge-label">TRICKY<br>WORD!</span>
+        </div>
+
+        <!-- Picture mode -->
+        <div id="card-picture" class="card-content">
+          <div id="card-emoji" class="card-emoji" aria-hidden="true"></div>
+          <div id="card-hint"  class="card-hint"></div>
+          <button id="btn-listen-picture" class="btn btn-small btn-blue listen-btn">
+            🔊 Listen
+          </button>
+        </div>
+
+        <!-- Audio mode -->
+        <div id="card-audio" class="card-content hidden">
+          <div class="ear-icon" aria-hidden="true">
+            <svg class="ear-svg" viewBox="0 0 80 110" xmlns="http://www.w3.org/2000/svg">
+              <!-- Outer pinna -->
+              <path d="M38,8 C56,8 66,22 66,40 C66,62 54,82 40,88 C35,91 30,88 29,83
+                       C28,77 32,71 33,65 C36,56 31,47 26,42 C17,36 12,24 16,14
+                       C19,8 28,8 38,8 Z"
+                    fill="#F5BF94" stroke="#C87840" stroke-width="2.5" stroke-linejoin="round"/>
+              <!-- Inner antihelix fold -->
+              <path d="M38,22 C29,29 26,41 31,52 C34,59 40,57 41,51 C43,44 37,38 40,29 Z"
+                    fill="#E09468"/>
+              <!-- Ear canal shadow -->
+              <ellipse cx="30" cy="52" rx="6" ry="8" fill="#C07040" opacity="0.38"/>
+            </svg>
+          </div>
+          <div id="audio-status" class="audio-status">Get ready…</div>
+          <button id="btn-hear-again" class="btn btn-small btn-blue hidden">
+            🔊 Hear again
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Timer -->
+    <div id="timer-container" class="timer-container">
+      <svg class="timer-svg" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="timer-track"    cx="60" cy="60" r="54" />
+        <circle id="timer-progress"
+                class="timer-progress" cx="60" cy="60" r="54"
+                stroke-dasharray="339.3"
+                stroke-dashoffset="0" />
+      </svg>
+      <div class="timer-display">
+        <span id="timer-number" class="timer-number">20</span>
+        <span class="timer-label">sec</span>
+      </div>
+    </div>
+
+    <!-- Next button -->
+    <button id="btn-next" class="btn btn-big btn-purple next-btn">
+      Next Word →
+    </button>
+
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ RESULTS SCREEN -->
+  <div id="screen-results" class="screen hidden">
+    <h2 class="results-title">Check your answers! ✏️</h2>
+    <p class="results-subtitle">Look at your paper and tap each word you got right.</p>
+
+    <div class="score-row">
+      <span class="score-label">Score:</span>
+      <span id="score-display" class="score-display">0 / 10</span>
+    </div>
+
+    <div id="results-grid" class="results-grid"></div>
+
+    <p id="score-message" class="score-message"></p>
+
+    <button id="btn-play-again" class="btn btn-big btn-green">
+      Play Again 🔄
+    </button>
+  </div>
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
