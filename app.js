@@ -219,11 +219,19 @@ function playWordSequence(entry, onDone) {
     $("audio-status").textContent = label;
 
     const utter = makeUtterance(text, rate);
-    utter.onend  = () => setTimeout(next, AUDIO_PAUSE_MS);
-    utter.onerror = () => {
-      $("audio-status").textContent = "Now write the word! ✏️";
-      onDone();
+
+    let advanced = false;
+    const advance = () => {
+      if (advanced) return;
+      advanced = true;
+      clearTimeout(safetyTimer);
+      setTimeout(next, AUDIO_PAUSE_MS);
     };
+    utter.onend  = advance;
+    utter.onerror = advance;
+    // Safety net: if browser never fires onend/onerror (e.g. file:// blocks speech),
+    // advance anyway so the game doesn't hang indefinitely.
+    const safetyTimer = setTimeout(advance, 8000);
 
     speechSynthesis.speak(utter);
   }
@@ -391,27 +399,20 @@ $("btn-listen-picture").addEventListener("click", () => {
   clearInterval(timerHandle);
   timerActive = false;
   setTimerWaiting(true);
-  $("btn-listen-picture").disabled = true;
-
-  let finished = false;
-  const finish = () => {
-    if (finished) return;
-    finished = true;
-    setTimerWaiting(false);
-    $("btn-listen-picture").disabled = false;
-    startTimer(); // resumes from current timeLeft
-  };
+  const btn = $("btn-listen-picture");
+  btn.disabled = true;
+  btn.textContent = "🔊 Playing…";
 
   // Cancel first, then speak on the next tick — doing both in the same
   // synchronous block causes Safari to silently drop the new utterance.
   cancelSpeech();
   setTimeout(() => {
-    const utter = makeUtterance(gameWords[wordIndex].word, 0.6);
-    utter.onend  = finish;
-    utter.onerror = finish;
-    speechSynthesis.speak(utter);
-    // Safety net: if the browser never fires onend/onerror, restart timer anyway
-    setTimeout(finish, 6000);
+    playWordSequence(gameWords[wordIndex], () => {
+      setTimerWaiting(false);
+      btn.disabled = false;
+      btn.textContent = "🔊 Listen";
+      startTimer();
+    });
   }, 80);
 });
 
